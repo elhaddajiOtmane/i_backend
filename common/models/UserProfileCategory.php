@@ -1,0 +1,89 @@
+<?php
+namespace common\models;
+use Yii;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
+use common\models\FileUpload;
+
+
+/**
+ * This is the model class for table "User Profile Category".
+ *
+ */
+class UserProfileCategory extends \yii\db\ActiveRecord
+{
+    const STATUS_ACTIVE=10;
+    const STATUS_INACTIVE=9;
+    const STATUS_DELETED=0;
+
+    public $imageFile;
+
+    
+    
+    /**
+     * {@inheritdoc}
+     */
+    public static function tableName()
+    {
+        return 'profile_category_type';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function rules()
+    {
+        return [
+            [['name', 'status'], 'required'],
+            [['status', 'id'], 'integer'],
+            // [['name'], 'string', 'max' => 100],
+            [['name'], 'required','on'=>'createMainCategory'],
+            [['name'], 'required','on'=>'updateMainCategory'],
+            [['imageFile'], 'file', 'skipOnEmpty' => true],
+            [['image'], 'safe'],
+
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'name' => Yii::t('app', 'Name'),
+            'status' => Yii::t('app', 'Status'),
+            // 'parent_id' => Yii::t('app', 'Main Category'),
+            
+        ];
+    }
+    public function getStatusDropDownData()
+    {
+        return array(self::STATUS_ACTIVE => 'Active', self::STATUS_INACTIVE => 'Inactive');
+    }
+
+    public function getStatus()
+    {
+       if($this->status==$this::STATUS_INACTIVE){
+           return 'Inactive';
+       }else if($this->status==$this::STATUS_ACTIVE){
+           return 'Active';    
+       }
+    }
+    
+    public function getImageUrl()
+    {
+        $modelFileUpload = new FileUpload();
+        return $modelFileUpload->getFileUrl($modelFileUpload::TYPE_CATEGORY,$this->image);
+
+        
+    }
+
+   
+
+
+
+    
+
+}
